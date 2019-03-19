@@ -255,11 +255,11 @@ pub fn bind_blend_slot(gl: &gl::Gl, slot: ColorSlot, color: s::Color) {
         Some(b) => unsafe {
             //Note: using ARB functions as they are more compatible
             gl.Enablei(gl::BLEND, buf);
-            gl.BlendEquationSeparateiARB(buf,
+            gl.BlendEquationSeparatei(buf,
                 map_equation(b.color.equation),
                 map_equation(b.alpha.equation)
             );
-            gl.BlendFuncSeparateiARB(buf,
+            gl.BlendFuncSeparatei(buf,
                 map_factor(b.color.source),
                 map_factor(b.color.destination),
                 map_factor(b.alpha.source),
