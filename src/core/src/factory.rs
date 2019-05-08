@@ -448,8 +448,10 @@ pub trait Factory<R: Resources> {
             bind: Bind::SHADER_RESOURCE,
             usage: Usage::Data,
         };
+        println!("i am here... with data len of {}", data.lem());
         let cty = <T::Channel as format::ChannelTyped>::get_channel_type();
         let raw = try!(self.create_texture_raw(desc, Some(cty), Some((data, mipmap))));
+        println!("now, i am here... with data len of {}", data.lem());
         let levels = (0, raw.get_info().levels - 1);
         let tex = Typed::new(raw);
         let view = try!(self.view_texture_as_shader_resource::<T>(&tex, levels, format::Swizzle::new()));

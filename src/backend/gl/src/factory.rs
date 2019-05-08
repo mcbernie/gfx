@@ -428,9 +428,9 @@ impl f::Factory<R> for Factory {
         let object = if desc.bind.intersects(Bind::SHADER_RESOURCE | Bind::UNORDERED_ACCESS) || data_opt.is_some() {
             // Some hacking... if data is only len 1 than it is an pointer to existing gl texture!
             if let Some(data) = data_opt {
-                if data.len() == 1 {
+                if data[0].len() == 1 {
                     println!("use existing data!");
-                    NewTexture::Texture(data[0] as u32)
+                    NewTexture::Texture(data[0][0] as u32)
                 } else {
                     let name = if caps.immutable_storage_supported {
                         try!(tex::make_with_storage(gl, &desc, cty))
