@@ -447,6 +447,7 @@ impl f::Factory<R> for Factory {
                 } else {
                     try!(tex::make_without_storage(gl, &desc, cty))
                 };
+                NewTexture::Texture(name)
             }
         }else {
             let name = try!(tex::make_surface(gl, &desc, cty));
