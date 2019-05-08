@@ -407,6 +407,7 @@ impl f::Factory<R> for Factory {
         Ok(self.share.handles.borrow_mut().make_pso(pso, program))
     }
 
+
     fn create_texture_raw(&mut self, desc: t::Info, hint: Option<ChannelType>, data_opt: Option<(&[&[u8]], t::Mipmap)>)
                           -> Result<handle::RawTexture<R>, t::CreationError> {
         use core::texture::CreationError;
@@ -425,15 +426,28 @@ impl f::Factory<R> for Factory {
         let cty = hint.unwrap_or(ChannelType::Uint); //careful here
         let gl = &self.share.context;
         let object = if desc.bind.intersects(Bind::SHADER_RESOURCE | Bind::UNORDERED_ACCESS) || data_opt.is_some() {
-            let name = if caps.immutable_storage_supported {
-                try!(tex::make_with_storage(gl, &desc, cty))
-            } else {
-                try!(tex::make_without_storage(gl, &desc, cty))
-            };
+            // Some hacking... if data is only len 1 than it is an pointer to existing gl texture!
             if let Some(data) = data_opt {
-                try!(tex::init_texture_data(gl, name, desc, cty, data));
+                if data.len() == 1 {
+                    println!("use existing data!");
+                    NewTexture::Texture(data[0] as u32)
+                } else {
+                    let name = if caps.immutable_storage_supported {
+                        try!(tex::make_with_storage(gl, &desc, cty))
+                    } else {
+                        try!(tex::make_without_storage(gl, &desc, cty))
+                    };
+                    
+                    try!(tex::init_texture_data(gl, name, desc, cty, data));
+                    NewTexture::Texture(name)
+                } 
+            } else {
+                let name = if caps.immutable_storage_supported {
+                    try!(tex::make_with_storage(gl, &desc, cty))
+                } else {
+                    try!(tex::make_without_storage(gl, &desc, cty))
+                };
             }
-            NewTexture::Texture(name)
         }else {
             let name = try!(tex::make_surface(gl, &desc, cty));
             NewTexture::Surface(name)
