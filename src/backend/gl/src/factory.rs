@@ -430,7 +430,7 @@ impl f::Factory<R> for Factory {
             if let Some(data) = data_opt {
                 if data.0.len() == 1 {
                     println!("use existing data!");
-                    NewTexture::Texture(data.0[0] as u32)
+                    NewTexture::Texture(5 as u32)
                 } else {
                     let name = if caps.immutable_storage_supported {
                         try!(tex::make_with_storage(gl, &desc, cty))
@@ -449,7 +449,7 @@ impl f::Factory<R> for Factory {
                 };
                 NewTexture::Texture(name)
             }
-        }else {
+        } else {
             let name = try!(tex::make_surface(gl, &desc, cty));
             NewTexture::Surface(name)
         };
