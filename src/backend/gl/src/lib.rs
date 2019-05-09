@@ -518,9 +518,15 @@ impl Device {
                 self.share.context.BindBufferBase(gl::UNIFORM_BUFFER, slot as gl::types::GLuint, buffer);
             },
             Command::BindResourceView(pso::ResourceViewParam(view, _, slot)) => unsafe {
-                println!("BindResourceView, slot ist: {}, bind is: {}, and object is: {}", slot, view.bind, view.object);
+                
                 self.share.context.ActiveTexture(gl::TEXTURE0 + slot as gl::types::GLenum);
-                self.share.context.BindTexture(view.bind, view.object);
+                if view.object == 7 {
+                    println!("BindResourceView, slot ist: {}, bind is: {}, and object is: {}", slot, view.bind, view.object);
+                    self.share.context.BindTexture(gl::TEXTURE_2D, view.object);
+                } else {
+                    self.share.context.BindTexture(view.bind, view.object);
+                }
+                
             },
             Command::BindUnorderedView(_uav) => unimplemented!(),
             Command::BindSampler(pso::SamplerParam(sampler, _, slot), bind_opt) => {
