@@ -447,7 +447,7 @@ pub trait Factory<R: Resources> {
         };
 
         let cty = <T::Channel as format::ChannelTyped>::get_channel_type();
-        let raw = try!(self.set_existing_texture_raw(desc, id));
+        let raw = try!(self.set_existing_texture_raw(id, desc));
 
         let levels = (0, raw.get_info().levels - 1);
         let tex = Typed::new(raw);
