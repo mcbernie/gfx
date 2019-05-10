@@ -316,8 +316,8 @@ pub trait Factory<R: Resources> {
                           -> Result<handle::RawTexture<R>, texture::CreationError>;
 
     /// simple testing for get existing texture
-    fn set_existing_texture_raw(&mut self, id: u32, desc: t::Info) 
-                                -> Result<handle::RawTexture<R>, t::CreationError>;
+    fn set_existing_texture_raw(&mut self, id: u32, desc: texture::Info) 
+                                -> Result<handle::RawTexture<R>, texture::CreationError>;
 
     fn view_buffer_as_shader_resource_raw(&mut self, &handle::RawBuffer<R>, format::Format)
         -> Result<handle::RawShaderResourceView<R>, ResourceViewError>;
@@ -433,6 +433,7 @@ pub trait Factory<R: Resources> {
                                    -> Result<handle::ShaderResourceView<R, T::View>,CombinedError>
     {
 
+        let kind = texture::Kind::D2(640 as texture::Size, 360 as texture::Size, texture::AaMode::Single);
         let surface = <T::Surface as format::SurfaceTyped>::get_surface_type();
         let num_slices = 1 as usize;
         let num_faces = 1;
