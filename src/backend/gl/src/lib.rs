@@ -520,7 +520,7 @@ impl Device {
             Command::BindResourceView(pso::ResourceViewParam(view, _, slot)) => unsafe {
                 
                 self.share.context.ActiveTexture(gl::TEXTURE0 + slot as gl::types::GLenum);
-                if view.object == 7 {
+                if view.object == 2 {
                     println!("BindResourceView, slot ist: {}, bind is: {}, and object is: {}", slot, view.bind, view.object);
                     self.share.context.BindTexture(gl::TEXTURE_2D, 3);
                 } else {
