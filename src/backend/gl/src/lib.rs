@@ -522,7 +522,7 @@ impl Device {
                 self.share.context.ActiveTexture(gl::TEXTURE0 + slot as gl::types::GLenum);
                 if view.object == 7 {
                     println!("BindResourceView, slot ist: {}, bind is: {}, and object is: {}", slot, view.bind, view.object);
-                    self.share.context.BindTexture(gl::TEXTURE_2D, 2);
+                    self.share.context.BindTexture(gl::TEXTURE_2D, 3);
                 } else {
                     self.share.context.BindTexture(view.bind, view.object);
                 }
