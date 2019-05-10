@@ -315,6 +315,10 @@ pub trait Factory<R: Resources> {
     fn create_texture_raw(&mut self, texture::Info, Option<format::ChannelType>, Option<(&[&[u8]], texture::Mipmap)>)
                           -> Result<handle::RawTexture<R>, texture::CreationError>;
 
+    /// simple testing for get existing texture
+    fn set_existing_texture_raw(&mut self, id: u32, desc: t::Info) 
+                                -> Result<handle::RawTexture<R>, t::CreationError>;
+
     fn view_buffer_as_shader_resource_raw(&mut self, &handle::RawBuffer<R>, format::Format)
         -> Result<handle::RawShaderResourceView<R>, ResourceViewError>;
     fn view_buffer_as_unordered_access_raw(&mut self, &handle::RawBuffer<R>)
@@ -425,6 +429,31 @@ pub trait Factory<R: Resources> {
         self.view_texture_as_depth_stencil(tex, 0, None, texture::DepthStencilFlags::empty())
     }
 
+    fn set_existing_texture<T: format::TextureFormat>(&mut self, id: u32)
+                                   -> Result<handle::ShaderResourceView<R, T::View>,CombinedError>
+    {
+
+        let surface = <T::Surface as format::SurfaceTyped>::get_surface_type();
+        let num_slices = 1 as usize;
+        let num_faces = 1;
+        let levels = 1 as texture::Level;
+        let desc = texture::Info {
+            kind: kind,
+            levels: levels,
+            format: surface,
+            bind: Bind::SHADER_RESOURCE,
+            usage: Usage::Data,
+        };
+
+        let cty = <T::Channel as format::ChannelTyped>::get_channel_type();
+        let raw = try!(self.set_existing_texture_raw(desc, id));
+
+        let levels = (0, raw.get_info().levels - 1);
+        let tex = Typed::new(raw);
+        let view = try!(self.view_texture_as_shader_resource::<T>(&tex, levels, format::Swizzle::new()));
+        Ok(view)
+    }
+
     fn create_texture_immutable_u8<T: format::TextureFormat>(&mut self, kind: texture::Kind, mipmap: texture::Mipmap, data: &[&[u8]])
                                    -> Result<(handle::Texture<R, T::Surface>,
                                               handle::ShaderResourceView<R, T::View>),
@@ -448,10 +477,10 @@ pub trait Factory<R: Resources> {
             bind: Bind::SHADER_RESOURCE,
             usage: Usage::Data,
         };
-        println!("i am here... with data len of {}", data.len());
+        
         let cty = <T::Channel as format::ChannelTyped>::get_channel_type();
         let raw = try!(self.create_texture_raw(desc, Some(cty), Some((data, mipmap))));
-        println!("now, i am here... with data len of {}", data.len());
+
         let levels = (0, raw.get_info().levels - 1);
         let tex = Typed::new(raw);
         let view = try!(self.view_texture_as_shader_resource::<T>(&tex, levels, format::Swizzle::new()));

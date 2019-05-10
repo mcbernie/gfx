@@ -407,6 +407,14 @@ impl f::Factory<R> for Factory {
         Ok(self.share.handles.borrow_mut().make_pso(pso, program))
     }
 
+    fn set_existing_texture_raw(&mut self, id: u32, desc: t::Info) 
+                                -> Result<handle::RawTexture<R>, t::CreationError> {
+
+        let object = NewTexture::Texture(id);
+
+        Ok(self.share.handles.borrow_mut().make_texture(object, desc))
+    }
+
 
     fn create_texture_raw(&mut self, desc: t::Info, hint: Option<ChannelType>, data_opt: Option<(&[&[u8]], t::Mipmap)>)
                           -> Result<handle::RawTexture<R>, t::CreationError> {
